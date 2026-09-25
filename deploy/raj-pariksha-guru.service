@@ -1,0 +1,15 @@
+[Unit]
+Description=Raj Pariksha Guru Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/raj-pariksha-guru
+EnvironmentFile=/opt/raj-pariksha-guru/.env
+ExecStart=/opt/raj-pariksha-guru/.venv/bin/python bot.py
+Restart=always
+RestartSec=5
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
