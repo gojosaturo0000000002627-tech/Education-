@@ -1308,3 +1308,9 @@ async def user_by_telegram(telegram_id: int) -> dict | None:
     async with session_scope() as s:
         user = (await s.execute(select(User).where(User.telegram_id == telegram_id))).scalar_one_or_none()
         return row_user(user) if user else None
+
+
+async def get_mcq_by_hash(question_hash: str) -> dict | None:
+    async with session_scope() as s:
+        row = (await s.execute(select(Mcq).where(Mcq.question_hash == question_hash))).scalar_one_or_none()
+        return row_mcq(row) if row else None

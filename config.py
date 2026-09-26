@@ -77,7 +77,7 @@ TIMEZONE = os.getenv("TIMEZONE", "Asia/Kolkata")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
 USER_AGENT = "RajParikshaGuruBot/1.0 (+educational; official-sources-only; contact: admin)"
-VERSION = "1.0.0"
+VERSION = "1.1.0-web"
 
 # rajasthan.gov.in ke saare subdomain apne aap official hain.
 # Inke alawa sirf ye hosts.

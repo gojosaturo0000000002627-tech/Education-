@@ -1,6 +1,36 @@
 # राज परीक्षा गुरु
 
-Rajasthan ki sarkari parikshaon ke liye Telegram bot. Naam suggestion: **राज परीक्षा गुरु** (`@RajParikshaGuruBot` — BotFather par availability check karein).
+**Web service build 1.1.0-web** — purani ZIP nahi. Start command neeche hai.
+
+## Web service — build aur start
+
+Render / Railway / Docker ke liye yahi use karo. `python bot.py` web host par mat chalao.
+
+Build:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start:
+
+```bash
+uvicorn web:app --host 0.0.0.0 --port $PORT
+```
+
+Apne computer par:
+
+```bash
+python web.py
+```
+
+Site: `http://127.0.0.1:8000`  
+Health: `http://127.0.0.1:8000/api/health`  
+Nayi files: `web.py`, `web/index.html`, `WEB-SERVICE.txt`
+
+---
+
+Rajasthan ki sarkari parikshaon ke liye Telegram bot + website. Naam suggestion: **राज परीक्षा गुरु** (`@RajParikshaGuruBot` — BotFather par availability check karein).
 
 Dusre naam: राजस्थान एग्जाम मित्र, सिलेबस साथी.
 

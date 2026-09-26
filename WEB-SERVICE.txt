@@ -1,0 +1,25 @@
+राज परीक्षा गुरु — WEB SERVICE BUILD
+Version: 1.1.0-web
+यह पुरानी Telegram-only ZIP नहीं है।
+
+इस पैकेज में नया है:
+- web.py
+- web/index.html
+- Procfile (web service)
+- render.yaml (type: web)
+- Dockerfile CMD uvicorn
+
+BUILD
+pip install -r requirements.txt
+
+START
+uvicorn web:app --host 0.0.0.0 --port $PORT
+
+LOCAL
+python web.py
+
+SITE
+http://127.0.0.1:8000
+
+Render / Railway par yahi Start command lagao.
+python bot.py sirf local Telegram polling hai, web host par use mat karo.

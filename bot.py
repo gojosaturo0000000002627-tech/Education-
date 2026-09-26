@@ -1215,18 +1215,10 @@ async def on_error(update: object, context: ContextTypes.DEFAULT_TYPE):
             pass
 
 
-def main() -> None:
-    if sys.version_info < (3, 11):
-        sys.exit("Python 3.11+ चाहिए।")
+def build_application() -> Application:
+    """Telegram handlers. Web service isi ko webhook/polling se chalati hai."""
     if not config.BOT_TOKEN:
-        print(
-            "BOT_TOKEN खाली है।\n"
-            "1) Telegram में @BotFather खोलें\n"
-            "2) /newbot → नाम: राज परीक्षा गुरु\n"
-            "3) token को .env में BOT_TOKEN= के आगे चिपकाएँ\n"
-            "4) python bot.py"
-        )
-        sys.exit(1)
+        raise RuntimeError("BOT_TOKEN khali hai")
     application = Application.builder().token(config.BOT_TOKEN).post_init(post_init).concurrent_updates(False).build()
     application.add_handler(CommandHandler("start", cmd_start))
     application.add_handler(CommandHandler("help", cmd_help))
@@ -1258,17 +1250,17 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.Document.ALL, on_document))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
     application.add_error_handler(on_error)
-    if config.MODE == "webhook":
-        if not config.WEBHOOK_URL:
-            sys.exit("MODE=webhook hai to WEBHOOK_URL bhi chahiye.")
-        application.run_webhook(
-            listen="0.0.0.0",
-            port=config.WEBHOOK_PORT,
-            url_path=config.WEBHOOK_PATH,
-            webhook_url=f"{config.WEBHOOK_URL}/{config.WEBHOOK_PATH}",
-        )
-    else:
-        application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=config.DROP_PENDING)
+    return application
+
+
+def main() -> None:
+    """Sirf local polling. Hosting ke liye web service chalao: python web.py"""
+    if sys.version_info < (3, 11):
+        sys.exit("Python 3.11+ चाहिए।")
+    if not config.BOT_TOKEN:
+        print("BOT_TOKEN खाली है। Web service ke liye: python web.py")
+        sys.exit(1)
+    build_application().run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=config.DROP_PENDING)
 
 
 if __name__ == "__main__":
