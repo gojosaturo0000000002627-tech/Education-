@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>राज परीक्षा गुरु</title>
+<style>
+  :root {
+    --ink: #241814;
+    --muted: #6d5c52;
+    --paper: #f3ecdf;
+    --card: #fffaf3;
+    --line: #e3d3c2;
+    --maroon: #8d2e39;
+    --maroon-dark: #5c1c24;
+    --saffron: #c56a2d;
+    --sand: #f7e7d2;
+    --ok: #1f6b45;
+    --bad: #9b2c2c;
+    --shadow: 0 10px 30px rgba(60, 30, 16, 0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 12% 8%, rgba(197, 106, 45, 0.16), transparent 28%),
+      radial-gradient(circle at 90% 0%, rgba(141, 46, 57, 0.12), transparent 26%),
+      var(--paper);
+    font-family: "Nirmala UI", "Mangal", "Noto Sans Devanagari", "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    background: var(--maroon-dark);
+    color: #fff8ef;
+    padding: 22px 7vw 18px;
+    border-bottom: 4px solid var(--saffron);
+  }
+  header .brand { display: flex; gap: 14px; align-items: center; }
+  .mark {
+    width: 52px; height: 52px; flex: none;
+    background: #fff8ef; color: var(--maroon);
+    border-radius: 14px;
+    display: grid; place-items: center;
+  }
+  h1 { font-size: 1.7rem; margin: 0; letter-spacing: 0; }
+  header p { margin: 4px 0 0; color: #f0d7c4; }
+  .wrap { width: min(1100px, 92vw); margin: 22px auto 48px; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  button, .chip {
+    font: inherit; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 999px; padding: 8px 14px;
+  }
+  button.active, .chip.active { background: var(--maroon); color: white; border-color: var(--maroon); }
+  button.primary { background: var(--saffron); color: white; border-color: var(--saffron); border-radius: 12px; }
+  button:disabled { opacity: 0.55; cursor: default; }
+  .layout { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  input, select, textarea {
+    width: 100%; font: inherit; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 12px; background: white;
+  }
+  textarea { min-height: 90px; resize: vertical; }
+  .exam {
+    width: 100%; text-align: left; border-radius: 14px; margin-top: 8px; padding: 10px 12px;
+  }
+  .exam small { display: block; color: var(--muted); }
+  .exam.active { outline: 2px solid var(--saffron); }
+  .kicker { color: var(--saffron); font-weight: 700; font-size: 0.82rem; letter-spacing: 0.04em; }
+  h2 { margin: 4px 0 8px; font-size: 1.35rem; }
+  .meta { color: var(--muted); font-size: 0.92rem; }
+  .note {
+    background: var(--sand); border-radius: 12px; padding: 10px 12px; color: #5a3b28; font-size: 0.92rem;
+  }
+  .options { display: grid; gap: 8px; margin-top: 12px; }
+  .opt {
+    text-align: left; border-radius: 12px; padding: 10px 12px;
+  }
+  .opt.good { background: #e7f6ee; border-color: var(--ok); }
+  .opt.bad { background: #fdecec; border-color: var(--bad); }
+  .score { font-size: 1.4rem; font-weight: 700; }
+  .hidden { display: none; }
+  a { color: var(--maroon); }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 18px; }
+  .status { font-size: 0.85rem; color: #f0d7c4; margin-top: 8px; }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    header { padding: 18px 5vw; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark" aria-hidden="true">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <path d="M4 28h26M7 28V16h6v12M15 28V8h8v20M25 28V14h4v14" stroke="#8d2e39" stroke-width="2"/>
+        <path d="M15 8l4-4 4 4" stroke="#c56a2d" stroke-width="2"/>
+      </svg>
+    </div>
+    <div>
+      <h1>राज परीक्षा गुरु</h1>
+      <p>राजस्थान की सरकारी परीक्षाओं की वेब सर्विस</p>
+      <div class="status" id="status">जोड़ रहा है…</div>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <div class="tabs">
+    <button class="active" data-tab="study">पढ़ाई</button>
+    <button data-tab="mcq">MCQ</button>
+    <button data-tab="quiz">क्विज़</button>
+    <button data-tab="ask">सवाल पूछो</button>
+  </div>
+  <div class="layout">
+    <aside class="panel">
+      <input id="q" placeholder="परीक्षा खोजें — पटवारी, REET, RAS" autocomplete="off">
+      <div id="list"></div>
+    </aside>
+    <section class="panel" id="stage">
+      <p class="kicker">वेब सर्विस</p>
+      <h2>एक जगह तैयारी</h2>
+      <p>बाएँ से परीक्षा चुनें। सिलेबस और पेपर सिर्फ आधिकारिक लिंक से आते हैं। MCQ अभ्यास के हैं, लीक पेपर नहीं।</p>
+      <p class="note">कटऑफ, रिक्ति और तारीख यहीं गढ़ी नहीं जाती। आधिकारिक साइट ही अंतिम है।</p>
+    </section>
+  </div>
+  <footer>
+    आधिकारिक पोर्टल:
+    <a href="https://rpsc.rajasthan.gov.in/" target="_blank" rel="noopener">RPSC</a> ·
+    <a href="https://rsmssb.rajasthan.gov.in/" target="_blank" rel="noopener">RSSB</a> ·
+    <a href="https://police.rajasthan.gov.in/" target="_blank" rel="noopener">पुलिस</a> ·
+    <a href="https://hcraj.nic.in/" target="_blank" rel="noopener">हाई कोर्ट</a>
+  </footer>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+let exams = [];
+let current = null;
+let tab = "study";
+let quiz = { items: [], i: 0, ok: 0, bad: [], timer: null, left: 30 };
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "अनुरोध असफल");
+  return data;
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
+async function loadExams() {
+  exams = await api("/api/exams?q=" + encodeURIComponent($("q").value.trim()));
+  $("list").innerHTML = exams.map((e) =>
+    `<button class="exam ${current && current.slug === e.slug ? "active" : ""}" data-slug="${esc(e.slug)}">
+      <strong>${esc(e.name_hi)}</strong><small>${esc(e.category)} · ${esc(e.body)}</small>
+    </button>`
+  ).join("") || "<p class='meta'>कोई परीक्षा नहीं मिली।</p>";
+}
+
+async function openExam(slug) {
+  current = await api("/api/exams/" + encodeURIComponent(slug));
+  await loadExams();
+  render();
+}
+
+function subjectButtons() {
+  const subs = (current && current.subjects) || [["gk", "राजस्थान GK"]];
+  return subs.map(([code, label]) => `<button class="chip" data-topic="${esc(code)}">${esc(label)}</button>`).join(" ");
+}
+
+function pdfList() {
+  const pdfs = current.pdfs || [];
+  if (!pdfs.length) {
+    return `<p class="note">अभी आधिकारिक PDF डेटाबेस में नहीं है। साइट खोलकर ताज़ा सिलेबस मिलाएँ। ऑटो-अपडेट रोज़ सरकारी पेज जाँचता है।</p>`;
+  }
+  return pdfs.map((p) =>
+    `<p><a href="${esc(p.source_url)}" target="_blank" rel="noopener">${esc(p.kind_hi)} ${esc(p.year || "")} ${p.shift ? "शिफ्ट " + esc(p.shift) : ""}</a>
+    <span class="meta"> · ${esc(p.file_name)} · ${esc(p.version_label || "")}</span></p>`
+  ).join("");
+}
+
+function renderStudy() {
+  if (!current) {
+    $("stage").innerHTML = `<p class="kicker">शुरू करें</p><h2>परीक्षा चुनें</h2><p>पटवारी, REET, RAS, पुलिस या हाई कोर्ट — बाईं सूची से खोलें।</p>`;
+    return;
+  }
+  $("stage").innerHTML = `
+    <p class="kicker">${esc(current.category)}</p>
+    <h2>${esc(current.name_hi)}</h2>
+    <p class="meta">${esc(current.name_en)} · ${esc(current.body)}</p>
+    <p>${esc(current.description_hi || "")}</p>
+    <p class="note">${esc(current.pattern_hi || "")}</p>
+    <p><a href="${esc(current.official_url)}" target="_blank" rel="noopener">आधिकारिक साइट खोलें</a></p>
+    <h3>सिलेबस और पेपर</h3>
+    ${pdfList()}
+    <p><button class="primary" id="go-mcq">इस परीक्षा का MCQ</button></p>`;
+  $("go-mcq").onclick = () => { tab = "mcq"; document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === "mcq")); render(); };
+}
+
+function renderMcq() {
+  $("stage").innerHTML = `
+    <p class="kicker">अभ्यास</p>
+    <h2>${current ? esc(current.name_hi) : "MCQ"}</h2>
+    <div class="tabs" id="topics">${subjectButtons()}</div>
+    <div class="tabs">
+      <button class="chip active" data-diff="easy">आसान</button>
+      <button class="chip" data-diff="medium">मध्यम</button>
+      <button class="chip" data-diff="hard">कठिन</button>
+    </div>
+    <button class="primary" id="newq">नया प्रश्न</button>
+    <div id="qbox"></div>`;
+  let topic = "gk";
+  let diff = "easy";
+  $("topics").onclick = (ev) => {
+    const b = ev.target.closest("[data-topic]");
+    if (!b) return;
+    topic = b.dataset.topic;
+    $("topics").querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
+  };
+  $("stage").querySelectorAll("[data-diff]").forEach((b) => b.onclick = () => {
+    diff = b.dataset.diff;
+    $("stage").querySelectorAll("[data-diff]").forEach((x) => x.classList.toggle("active", x === b));
+  });
+  $("newq").onclick = () => loadOne(topic, diff);
+}
+
+async function loadOne(topic, diff) {
+  if (!current) return alert("पहले परीक्षा चुनें");
+  $("qbox").innerHTML = "<p>प्रश्न ला रहा है…</p>";
+  try {
+    const data = await api("/api/mcq", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: current.slug, topic, difficulty: diff, n: 1 }) });
+    showQuestion(data.questions[0], $("qbox"));
+  } catch (err) {
+    $("qbox").innerHTML = `<p class="note">${esc(err.message)}</p>`;
+  }
+}
+
+function showQuestion(item, box, onDone) {
+  const letters = ["A", "B", "C", "D"];
+  box.innerHTML = `<h3>${esc(item.question)}</h3><div class="options">${item.options.map((o, i) =>
+    `<button class="opt" data-i="${i}">${letters[i]}) ${esc(o)}</button>`).join("")}</div><div id="why"></div>`;
+  box.querySelectorAll(".opt").forEach((b) => b.onclick = async () => {
+    box.querySelectorAll(".opt").forEach((x) => x.disabled = true);
+    const selected = Number(b.dataset.i);
+    const result = await api("/api/mcq/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ hash: item.hash, selected }) });
+    box.querySelectorAll(".opt").forEach((x) => {
+      const i = Number(x.dataset.i);
+      if (i === result.correct_index) x.classList.add("good");
+      else if (i === selected) x.classList.add("bad");
+    });
+    box.querySelector("#why").innerHTML = `<p class="note">${result.correct ? "सही।" : "गलत।"} ${esc(result.explanation)}</p>`;
+    if (onDone) onDone(result.correct, item, result);
+  });
+}
+
+function renderQuiz() {
+  $("stage").innerHTML = `
+    <p class="kicker">टेस्ट</p>
+    <h2>10 प्रश्नों का क्विज़</h2>
+    <p class="meta">हर प्रश्न पर 30 सेकंड। अंत में स्कोर और गलत उत्तरों की व्याख्या।</p>
+    <div class="tabs" id="topics">${subjectButtons()}</div>
+    <button class="primary" id="startq">क्विज़ शुरू</button>
+    <div id="qbox"></div>`;
+  let topic = "gk";
+  $("topics").onclick = (ev) => {
+    const b = ev.target.closest("[data-topic]");
+    if (!b) return;
+    topic = b.dataset.topic;
+    $("topics").querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
+  };
+  $("startq").onclick = () => startQuiz(topic);
+}
+
+async function startQuiz(topic) {
+  if (!current) return alert("पहले परीक्षा चुनें");
+  clearInterval(quiz.timer);
+  $("qbox").innerHTML = "<p>क्विज़ बन रहा है…</p>";
+  try {
+    const data = await api("/api/mcq", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: current.slug, topic, difficulty: "medium", n: 10 }) });
+    quiz = { items: data.questions, i: 0, ok: 0, bad: [], timer: null, left: 30 };
+    nextQuiz();
+  } catch (err) {
+    $("qbox").innerHTML = `<p class="note">${esc(err.message)}</p>`;
+  }
+}
+
+function nextQuiz() {
+  clearInterval(quiz.timer);
+  if (quiz.busy) return;
+  if (quiz.i >= quiz.items.length) return finishQuiz();
+  const item = quiz.items[quiz.i];
+  quiz.left = 30;
+  const box = $("qbox");
+  box.innerHTML = `<p class="meta">प्रश्न ${quiz.i + 1}/${quiz.items.length} · <span id="clock">30</span> सेकंड</p>`;
+  const holder = document.createElement("div");
+  box.appendChild(holder);
+  showQuestion(item, holder, (ok, q, result) => {
+    if (quiz.busy) return;
+    quiz.busy = true;
+    clearInterval(quiz.timer);
+    if (ok) quiz.ok += 1;
+    else quiz.bad.push({ q, result });
+    quiz.i += 1;
+    quiz.busy = false;
+    setTimeout(nextQuiz, 700);
+  });
+  quiz.timer = setInterval(async () => {
+    quiz.left -= 1;
+    const clock = $("clock");
+    if (clock) clock.textContent = String(quiz.left);
+    if (quiz.left <= 0) {
+      if (quiz.busy) return;
+      quiz.busy = true;
+      clearInterval(quiz.timer);
+      const result = await api("/api/mcq/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ hash: item.hash, selected: null }) });
+      quiz.bad.push({ q: item, result });
+      quiz.i += 1;
+      quiz.busy = false;
+      nextQuiz();
+    }
+  }, 1000);
+}
+
+function finishQuiz() {
+  const total = quiz.items.length || 1;
+  $("qbox").innerHTML = `<p class="score">${quiz.ok}/${total}</p><p>सही ${quiz.ok} · गलत या छूटे ${quiz.bad.length}</p>` +
+    quiz.bad.map((b) => `<p><strong>${esc(b.q.question)}</strong><br><span class="meta">${esc(b.result.explanation || "")}</span></p>`).join("");
+}
+
+function renderAsk() {
+  $("stage").innerHTML = `
+    <p class="kicker">शिक्षक</p>
+    <h2>पढ़ाई का सवाल</h2>
+    <textarea id="askbox" placeholder="उदाहरण: राजस्थान की मृत नदी कौन सी है?"></textarea>
+    <p><button class="primary" id="askbtn">उत्तर दो</button></p>
+    <div id="ans"></div>
+    <p class="note">ताज़ा खबर, कटऑफ और फॉर्म की तारीख नहीं गढ़ी जाती। AI कुंजी न हो तो सीमित उत्तर मिलेगा।</p>`;
+  $("askbtn").onclick = async () => {
+    const question = $("askbox").value.trim();
+    if (!question) return;
+    $("ans").innerHTML = "<p>सोच रहा है…</p>";
+    try {
+      const data = await api("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, slug: current && current.slug }) });
+      $("ans").innerHTML = esc(data.answer).split("\n").map((line) => `<p>${line || "&nbsp;"}</p>`).join("");
+    } catch (err) {
+      $("ans").innerHTML = `<p class="note">${esc(err.message)}</p>`;
+    }
+  };
+}
+
+function render() {
+  if (tab === "mcq") renderMcq();
+  else if (tab === "quiz") renderQuiz();
+  else if (tab === "ask") renderAsk();
+  else renderStudy();
+}
+
+document.querySelector(".tabs").onclick = (ev) => {
+  const b = ev.target.closest("[data-tab]");
+  if (!b) return;
+  tab = b.dataset.tab;
+  document.querySelectorAll("header ~ main > .tabs button, main > .tabs button").forEach(() => {});
+  document.querySelectorAll(".wrap > .tabs button").forEach((x) => x.classList.toggle("active", x === b));
+  render();
+};
+$("list").onclick = (ev) => {
+  const b = ev.target.closest("[data-slug]");
+  if (b) openExam(b.dataset.slug);
+};
+$("q").addEventListener("input", () => loadExams());
+
+api("/api/health").then((h) => {
+  $("status").textContent = h.telegram ? "वेब सर्विस चालू · Telegram जुड़ा है" : "वेब सर्विस चालू · Telegram टोकन अभी नहीं है";
+}).catch(() => { $("status").textContent = "सर्विस जवाब नहीं दे रही"; });
+loadExams().then(() => { if (exams[0]) openExam(exams[0].slug); });
+</script>
+</body>
+</html>
